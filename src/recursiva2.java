@@ -67,10 +67,18 @@ public class recursiva2 extends javax.swing.JFrame {
 
         int ultimoValor = Integer.parseInt(String.valueOf(ultimoCaracter));
 
-        for (int i = 0; i < 10; i++) {
-            if (ultimoValor == i) {
-                return true;
-            }
+        return buscarValor(ultimoValor, 0);
+
+    }
+
+    //validarultimovalor
+    public boolean buscarValor(int ultimoValor, int i) {
+        if (ultimoValor == i) {
+            return true;
+        }
+
+        if (i < 10) {
+            return buscarValor(ultimoValor, i + 1);
         }
 
         return false;
@@ -149,7 +157,7 @@ public class recursiva2 extends javax.swing.JFrame {
     }
 
     //Combinacion
-    public  double Combinacion(double n, double k) {
+    public double Combinacion(double n, double k) {
         if (k > n) {
             operaciones.setText("n debe ser mayor");
             return 0; // No se puede calcular la combinación si k es mayor que n
@@ -203,16 +211,22 @@ public class recursiva2 extends javax.swing.JFrame {
     }
 
     //pi
-    public static double Pi(int iteraciones) {
-        double pi = 0.0;
-        int signo = 1;
-        for (int i = 0; i < iteraciones; i++) {
-            double termino = 1.0 / (2 * i + 1);
-            pi += signo * termino;
-            signo *= -1;
+    //algoritmo de Bailey-Borwein-Plouffe (BBP). Este algoritmo permite calcular dígitos individuales de Pi sin necesidad de iteraciones largas
+    public static double Pi(int digitos) {
+        return PiRecursivo(digitos, 0);
+    }
+
+    private static double PiRecursivo(int digitos, int k) {
+        if (digitos == 0) {
+            return 0.0;
         }
 
-        return pi * 4.0;
+        double resultado = 0.0;
+        double numerador = 1.0 / Math.pow(16, k);
+
+        resultado += numerador * (4.0 / (8 * k + 1) - 2.0 / (8 * k + 4) - 1.0 / (8 * k + 5) - 1.0 / (8 * k + 6));
+
+        return resultado + PiRecursivo(digitos - 1, k + 1);
     }
 
     //potencia
@@ -221,52 +235,62 @@ public class recursiva2 extends javax.swing.JFrame {
             throw new IllegalArgumentException("El exponente debe ser un número no negativo.");
         }
 
-        double resultado = 1.0;
-        for (int i = 0; i < exponente; i++) {
-            resultado *= base;
+        if (exponente == 0) {
+            return 1.0;
         }
 
-        return resultado;
+        return base * potencia(base, exponente - 1);
+    }
+    //euler 
+public static double euler(int iteraciones) {
+    return eulerRecursivo(iteraciones, 0, 1.0, 1.0);
+}
+
+private static double eulerRecursivo(int iteraciones, int indice, double termino, double euler) {
+    if (iteraciones == 0) {
+        return euler;
     }
 
-    //euler elevado
-    public static double exponencial(double x, int iteraciones) {
-        double exponencial = 1.0;
-        double termino = 1.0;
+    double nuevoTermino = termino / (indice + 1);
+    double nuevoEuler = euler + nuevoTermino;
 
-        for (int i = 1; i <= iteraciones; i++) {
-            termino *= x / i;
-            exponencial += termino;
-        }
-
-        return exponencial;
-    }
+    return eulerRecursivo(iteraciones - 1, indice + 1, nuevoTermino, nuevoEuler);
+}
 
     //seno 
     public static double seno(double x) {
-        double seno = 0;
-        double termino = x;
+    return senoRecursivo(x, 10, x, 1.0);
+}
 
-        for (int i = 1; i <= 10; i++) {
-            seno += termino;
-            termino *= -1 * x * x / ((2 * i) * (2 * i + 1));
-        }
-
+private static double senoRecursivo(double x, int iteraciones, double termino, double seno) {
+    if (iteraciones == 0) {
         return seno;
     }
 
+    double nuevoSeno = seno + termino;
+    double nuevoTermino = -1 * termino * x * x / ((2 * iteraciones) * (2 * iteraciones + 1));
+
+    return senoRecursivo(x, iteraciones - 1, nuevoTermino, nuevoSeno);
+}
+
+
     //coseno
     public static double coseno(double x) {
-        double coseno = 0;
-        double term = 1;
+    return cosenoRecursivo(x, 9, 1.0, 1.0);
+}
 
-        for (int i = 0; i <= 10; i++) {
-            coseno += term;
-            term *= -1 * x * x / ((2 * i + 1) * (2 * i + 2));
-        }
-
+private static double cosenoRecursivo(double x, int iteraciones, double termino, double coseno) {
+    if (iteraciones == 0) {
         return coseno;
     }
+
+    double nuevoCoseno = coseno + termino;
+    double nuevoTermino = -1 * termino * x * x / ((2 * iteraciones - 1) * (2 * iteraciones));
+
+    return cosenoRecursivo(x, iteraciones - 1, nuevoTermino, nuevoCoseno);
+}
+
+
 
     //CALCULO DE EXPRESIONES
     //Esta funcion evalua factorial,pi, exponencial y funciones sen, cos, tan  para que al momento de realizar operaciones estos numeros ya esten definidos
@@ -276,7 +300,7 @@ public class recursiva2 extends javax.swing.JFrame {
         while (hayCambios == true) {
             hayCambios = false;
             if (expresion.contains("pi")) {//si hay un numero pi se evalua enseguida
-                double valorPi = Pi(10000000);
+                double valorPi = Pi(14);
                 expresion = expresion.replace("pi", String.valueOf(valorPi));
                 hayCambios = true;
                 System.out.println("expresion: " + expresion);
@@ -290,7 +314,7 @@ public class recursiva2 extends javax.swing.JFrame {
                 if ((indiceSen == -1) || (indiceSen > indiceEuler)) {
 
                     if (indiceEuler != -1) {
-                        double exponencial = exponencial(1, 10000);
+                        double exponencial = euler(10);
                         expresion = expresion.replaceFirst("e", String.valueOf(exponencial));
                         hayCambios = true;
                         System.out.println("expresion: " + expresion);
