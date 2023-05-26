@@ -444,18 +444,18 @@ public class iterativa extends javax.swing.JFrame {
     }
 
     public double evaluarExpresion(String expresion) {
-        // Split the expression into operands and operators
+        // Separar la expresion en numeros y operadores
 
         String[] partes = expresion.split(" ");
 
         double resultado = Double.parseDouble(partes[0]);
 
-        // Since each operation involves two operands, we increment by 2
+        // como cada operacion tiene un operador, se incrementa en 2
         for (int i = 1; i < partes.length; i += 2) {
             String operador = partes[i];
             double valor = Double.parseDouble(partes[i + 1]);
 
-            // Perform the operation
+            // Realiza la operacion 
             switch (operador) {
                 case "+":
                     resultado += valor;
@@ -490,7 +490,7 @@ public class iterativa extends javax.swing.JFrame {
                     if (valor == 0) {
                         operaciones.setText("El divisor no puede ser cero");//VALIDACION
                         error = 1;
-                        return 0; // Or any other error value
+                        return 0; // u otro error
                     } else {
                         error = 0;
                         operaciones.setText("");
