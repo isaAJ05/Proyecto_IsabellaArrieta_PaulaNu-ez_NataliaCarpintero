@@ -16,7 +16,7 @@ public class instrucciones extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);//centrar ventana
         this.setResizable(false);
-        //prueba
+        //prueba2
 
     }
 
